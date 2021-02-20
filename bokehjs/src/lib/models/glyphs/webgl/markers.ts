@@ -5,7 +5,6 @@ import fragment_shader from "./markers.frag"
 import {ScatterView} from "../scatter"
 import {CircleView} from "../circle"
 import {map} from "core/util/arrayable"
-import {logger} from "core/logging"
 import {MarkerType} from "core/enums"
 import {ColorArray, RGBAArray, uint32} from "core/types"
 import {color2rgba} from "core/util/color"
@@ -190,14 +189,6 @@ export class MarkerGL extends BaseGLGlyph {
     else if (indices.length === nvertices)
       this.prog.draw(this.gl.POINTS, [0, nvertices])
     else if (nvertices < 65535) {
-      // On IE the marker size is reduced to 1 px when using an index buffer
-      // A MS Edge dev on Twitter said on 24-04-2014: "gl_PointSize > 1.0 works
-      // in DrawArrays; gl_PointSize > 1.0 in DrawElements is coming soon in the
-      // next renderer update.
-      const ua = window.navigator.userAgent
-      if ((ua.indexOf("MSIE ") + ua.indexOf("Trident/") + ua.indexOf("Edge/")) > 0) {
-        logger.warn('WebGL warning: IE is known to produce 1px sprites whith selections.')
-      }
       this.index_buffer.set_size(indices.length*2)
       this.index_buffer.set_data(0, new Uint16Array(indices))
       this.prog.draw(this.gl.POINTS, this.index_buffer)
